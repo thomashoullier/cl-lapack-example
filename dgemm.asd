@@ -4,4 +4,5 @@
   :author "karl"
   :description "LAPACK dgemm sbcl calls."
   :components ((:file "package")
-	       (:file "dgemm" :depends-on ("package"))))
+	       (:file "dgemm" :depends-on ("package"))
+	       (:file "mm" :depends-on ("package"))))
