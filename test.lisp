@@ -12,6 +12,18 @@
       (loop for j from 0 below j1 do
 	(assert (= (aref mat1 i j) (aref mat2 i j)))))))
 
+(defmacro internal-time (body)
+  "Time the execution of 'body' and return the result in seconds.
+1. Real time.
+2. Run time."
+  `(let ((start-run-time (get-internal-run-time))
+	 (start-real-time (get-internal-real-time)))
+     ,body
+     (values (/ (- (get-internal-real-time) start-real-time)
+		internal-time-units-per-second)
+	     (/ (- (get-internal-run-time) start-run-time)
+		internal-time-units-per-second))))
+
 ;;; Example test
 (let ((a (make-array '(2 3) :element-type 'double-float
 			    :initial-contents '((2d0 1d0 6d0) (7d0 3d0 4d0))))
@@ -48,3 +60,5 @@
       (checkm c1 c2))))
 
 (format t "Stochastic test: PASSED.~%")
+
+;;; Speed information
