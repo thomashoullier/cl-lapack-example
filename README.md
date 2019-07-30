@@ -84,6 +84,21 @@ for the operation *C = A.B*, *Trans(B).Trans(A) = Trans(A.B) = Trans(C)*, we can
 perform the multiplication by feeding the matrices A and B in reverse order. We
 avoid having to transpose the matrices ourselves in this case.
 
+## Benchmarking
+Let us compare the speed of three implementations of matrix multiplication:
+1. SBCL without optimizations.
+1. SBCL with optimizations.
+1. LAPACK `dgemm()`.
+
+We plot the time it takes to multiply two n by n matrices, as a function of n.
+Please note the logscale on the y axis.
+
+![Speed comparison matrix multiplication](speed-plot.png)
+
+The results are unsurprising, LAPACK is pretty fast. Of course, if all you have
+to perform are 3x3 or 4x4 matrix multiplications then you're probably better off
+not using LAPACK.
+
 ## References
 1. https://stackoverflow.com/questions/29822509/matrix-multiplication-using-blas-from-common-lisp
 1. http://www.netlib.org/lapack/explore-html/d1/d54/group__double__blas__level3_gaeda3cbd99c8fb834a60a6412878226e1.html#gaeda3cbd99c8fb834a60a6412878226e1
