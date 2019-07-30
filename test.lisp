@@ -62,3 +62,40 @@
 (format t "Stochastic test: PASSED.~%")
 
 ;;; Speed information
+(with-open-file (str "~/repos/cl-lapack-example/speed.dat"
+		     :direction :output
+		     :if-exists :supersede
+		     :if-does-not-exist :create)
+  (format str "n sbcl sbcl-spec lapack~%")
+  (let ((nmax 100)
+	(samp-coef 100000)
+	(ampl 1000d0))
+    (loop for ndim from 3 upto nmax do
+      (let ((a (make-array (list ndim ndim) :element-type 'double-float))
+	    (b (make-array (list ndim ndim) :element-type 'double-float))
+	    (c (make-array (list ndim ndim) :element-type 'double-float))
+	    (run-cl 0)
+	    (run-clopt 0)
+	    (run-lapack 0)
+	    (samp (floor (/ samp-coef (* ndim ndim)))))
+	;; Filling with random values
+	(loop for mat in (list a b) do
+	  (loop for i from 0 below (array-dimension mat 0) do
+	    (loop for j from 0 below (array-dimension mat 1) do
+	      (setf (aref mat i j) (- (random ampl) (/ ampl 2d0))))))
+	(psetf run-cl
+	       (/ (nth-value 0 (internal-time (dotimes (it samp)
+						(dgemm:mm a b c))))
+		  samp)
+	       run-clopt
+	       (/ (nth-value 0 (internal-time (dotimes (it samp)
+						(dgemm:mm-spec a b c))))
+		  samp)
+	       run-lapack
+	       (/ (nth-value 0 (internal-time (dotimes (it samp)
+						 (dgemm:mm-lapack a b c))))
+		  samp))
+	(format t "~A~%" run-lapack)
+	(format str "~a ~,2e ~,2e ~,2e~%" ndim run-cl run-clopt run-lapack)))))
+
+(format t "Speed assessment finished.~%")
